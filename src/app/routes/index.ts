@@ -14,7 +14,7 @@ const moduleRoutes = [
     //     route: UserRoutes,
     // },
     {
-        path: 'books',
+        path: '/books',
         route: BookRoutes,
     }
 

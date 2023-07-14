@@ -5,8 +5,10 @@ import { BookController } from './book.controller';
 
 const router = express.Router();
 
-router.post(
-    '/create-book', validateRequest(BookValidation.createBookZodSchema), BookController.createBook);
+router.post('/create-book', validateRequest(BookValidation.createBookZodSchema), BookController.createBook);
+router.get('/:id', BookController.getBookById);
+router.get('/', BookController.getAllBooks);
+router.patch('/book/:id', BookController.updateBook);
 
 
 export const BookRoutes = router;
