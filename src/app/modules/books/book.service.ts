@@ -1,23 +1,26 @@
-import { object } from "zod";
 import { paginationHelpers } from "../../../helpers/paginationHelpers";
 import { IPaginationOptions } from "../../../interfaces/pagination";
 import { bookFilterableFields } from "./book.constants";
 import { IBook, IBookFilters } from "./book.interface";
 import { Book } from "./book.model";
+import { SortOrder } from "mongoose";
+import { IGenericResponse } from "../../../interfaces/common";
 
-
+//Create a new book
 const createBook = async (data: IBook): Promise<IBook> => {
     const result = await Book.create(data);
     return result;
 };
 
+//get a single book
 const getBookById = async (id: string | null): Promise<IBook | null> => {
     const result = await Book.findById(id);
     return result;
 };
 
+//Get all books with search and filter conditions
 const getAllBooks = async (filters: IBookFilters, paginationOptions: IPaginationOptions)
-    : Promise<IBook[]> => {
+    : Promise<IGenericResponse<IBook[]>> => {
     const { limit, page, sortBy, sortOrder, skip } = paginationHelpers.calculatePagination(paginationOptions)
 
     // Extract searchTerm to implement search query
@@ -46,15 +49,40 @@ const getAllBooks = async (filters: IBookFilters, paginationOptions: IPagination
         });
     };
 
-    const result = await Book.find();
-    return result;
+    // Dynamic  Sort needs  field to  do sorting
+    const sortConditions: { [key: string]: SortOrder } = {};
+    if (sortBy && sortOrder) {
+        sortConditions[sortBy] = sortOrder;
+    }
+
+    // If there is no condition , put {} to give all data
+    const whereConditions =
+        andConditions.length > 0 ? { $and: andConditions } : {};
+
+    const result = await Book.find(whereConditions)
+        .sort(sortConditions)
+        .skip(skip)
+        .limit(limit)
+
+    const total = await Book.countDocuments(whereConditions);
+
+    return {
+        meta: {
+            page,
+            limit,
+            total
+        },
+        data: result
+    };
 };
 
+//Updata the book
 const updateBook = async (id: string, data: Partial<IBook>): Promise<IBook | null> => {
     const result = await Book.findByIdAndUpdate(id, data, { new: true });
     return result;
 };
 
+//Delete the book
 const deleteBook = async (id: string): Promise<IBook | null> => {
     const result = await Book.findOneAndDelete({ _id: id }, { new: true });
     return result;
