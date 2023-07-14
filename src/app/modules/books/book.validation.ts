@@ -14,6 +14,9 @@ const createBookZodSchema = z.object({
         publicationYear: z.string({
             required_error: "Publication date is required"
         }),
+        cover_img: z.string({
+            required_error: "Cover image is required"
+        })
     }),
 });
 
@@ -31,6 +34,9 @@ const updateBookZodSchema = z.object({
         publicationYear: z.string({
             required_error: "Publication date is required"
         }).nonempty("Date is required").optional(),
+        cover_img: z.string({
+            required_error: "Cover image is required"
+        }).nonempty("Cover image is required").optional(),
     }),
 });
 

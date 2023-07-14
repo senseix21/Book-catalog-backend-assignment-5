@@ -2,11 +2,11 @@ import { Model, Schema, model } from "mongoose";
 import { BookModel, IBook } from "./book.interface";
 
 const bookSchema = new Schema<IBook>({
-    _id: { type: Schema.Types.ObjectId, required: true },
     title: { type: String, required: true },
     author: { type: String, required: true },
     genre: { type: String, required: true },
     publicationYear: { type: String, required: true },
+    cover_img: { type: String, required: true },
     reviews: [{ type: String }],
 },
     {

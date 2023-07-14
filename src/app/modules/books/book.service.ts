@@ -1,6 +1,6 @@
 import { paginationHelpers } from "../../../helpers/paginationHelpers";
 import { IPaginationOptions } from "../../../interfaces/pagination";
-import { bookFilterableFields } from "./book.constants";
+import { bookSearchableFields } from "./book.constants";
 import { IBook, IBookFilters } from "./book.interface";
 import { Book } from "./book.model";
 import { SortOrder } from "mongoose";
@@ -31,7 +31,7 @@ const getAllBooks = async (filters: IBookFilters, paginationOptions: IPagination
     //Implement search query parameters 
     if (searchTerm) {
         andConditions.push({
-            $or: bookFilterableFields.map(field => ({
+            $or: bookSearchableFields.map(field => ({
                 [field]: {
                     $regex: searchTerm,
                     $options: 'i'
