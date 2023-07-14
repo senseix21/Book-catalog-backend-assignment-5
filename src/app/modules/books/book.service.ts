@@ -1,4 +1,8 @@
-import { IBook } from "./book.interface";
+import { object } from "zod";
+import { paginationHelpers } from "../../../helpers/paginationHelpers";
+import { IPaginationOptions } from "../../../interfaces/pagination";
+import { bookFilterableFields } from "./book.constants";
+import { IBook, IBookFilters } from "./book.interface";
 import { Book } from "./book.model";
 
 
@@ -12,7 +16,36 @@ const getBookById = async (id: string | null): Promise<IBook | null> => {
     return result;
 };
 
-const getAllBooks = async (): Promise<IBook[]> => {
+const getAllBooks = async (filters: IBookFilters, paginationOptions: IPaginationOptions)
+    : Promise<IBook[]> => {
+    const { limit, page, sortBy, sortOrder, skip } = paginationHelpers.calculatePagination(paginationOptions)
+
+    // Extract searchTerm to implement search query
+    const { searchTerm, ...filtersData } = filters;
+
+    const andConditions = [];
+
+    //Implement search query parameters 
+    if (searchTerm) {
+        andConditions.push({
+            $or: bookFilterableFields.map(field => ({
+                [field]: {
+                    $regex: searchTerm,
+                    $options: 'i'
+                }
+            }))
+        })
+    };
+
+    // Filters needs $and to fullfill all the conditions
+    if (Object.keys(filtersData).length > 0) {
+        andConditions.push({
+            $and: Object.entries(filtersData).map(([field, value]) => ({
+                [field]: value
+            })),
+        });
+    };
+
     const result = await Book.find();
     return result;
 };

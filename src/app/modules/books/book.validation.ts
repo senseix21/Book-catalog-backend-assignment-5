@@ -11,7 +11,7 @@ const createBookZodSchema = z.object({
         genre: z.string({
             required_error: "Genre is required"
         }),
-        publicationDate: z.string({
+        publicationYear: z.string({
             required_error: "Publication date is required"
         }),
     }),
@@ -28,7 +28,7 @@ const updateBookZodSchema = z.object({
         genre: z.string({
             required_error: "Genre is required"
         }).nonempty("Genre is required").optional(),
-        publicationDate: z.string({
+        publicationYear: z.string({
             required_error: "Publication date is required"
         }).nonempty("Date is required").optional(),
     }),

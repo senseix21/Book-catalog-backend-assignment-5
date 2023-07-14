@@ -5,8 +5,14 @@ export type IBook = {
     title: string;
     author: string;
     genre: string;
-    publicationDate: string;
+    publicationYear: string;
     reviews: string[];
 };
+
+export type IBookFilters = {
+    searchTerm: string;
+    genre: string;
+    publicationYear: string;
+}
 
 export type BookModel = Model<IBook, Record<string, unknown>>;

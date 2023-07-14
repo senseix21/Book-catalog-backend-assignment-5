@@ -5,12 +5,15 @@ import httpStatus from 'http-status'
 import { BookService } from "./book.service";
 import { Book } from "./book.model";
 import ApiError from "../../../errors/ApiError";
+import pick from "../../../shared/pick";
+import { bookFilterableFields } from "./book.constants";
+import { paginationFields } from "../../../constants/pagination";
+import { IBook } from "./book.interface";
 
 
 //create a new Book
 const createBook: RequestHandler = catchAsync(async (req, res, next) => {
     const bookData = req.body;
-    console.log(bookData);
     const result = await BookService.createBook(bookData);
 
     sendResponse(
@@ -42,6 +45,7 @@ const updateBook: RequestHandler = catchAsync(async (req, res, next) => {
         });
 
         next();
+
     } else {
         throw new ApiError(httpStatus.NOT_FOUND, 'Book not found');
     }
@@ -66,14 +70,21 @@ const getBookById: RequestHandler = catchAsync(async (req, res, next) => {
 
 //get all books
 const getAllBooks: RequestHandler = catchAsync(async (req, res, next) => {
-    const result = await BookService.getAllBooks();
+    const filters = pick(req.query, bookFilterableFields);
+    const paginationOptions = pick(req.query, paginationFields);
 
-    sendResponse(
+    const result = await BookService.getAllBooks(
+        filters,
+        paginationOptions
+    );
+
+    sendResponse<IBook[]>(
         res, {
         success: true,
         statusCode: httpStatus.OK,
         message: 'Books retrieved successfully',
-        data: result
+        meta: result.meta,
+        data: result.data,
     });
 
     next();
@@ -83,7 +94,6 @@ const getAllBooks: RequestHandler = catchAsync(async (req, res, next) => {
 const deleteBook: RequestHandler = catchAsync(async (req, res, next) => {
     const id = req.params.id;
     const isBookExist = await Book.findById(id);
-    console.log(isBookExist, 'deleteBook');
 
     if (isBookExist) {
         const result = await BookService.deleteBook(id);
