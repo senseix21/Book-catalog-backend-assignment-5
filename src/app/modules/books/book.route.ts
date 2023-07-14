@@ -6,9 +6,12 @@ import { BookController } from './book.controller';
 const router = express.Router();
 
 router.post('/create-book', validateRequest(BookValidation.createBookZodSchema), BookController.createBook);
+
 router.get('/:id', BookController.getBookById);
 router.get('/', BookController.getAllBooks);
-router.patch('/book/:id', BookController.updateBook);
+
+router.patch('/:id', validateRequest(BookValidation.updateBookZodSchema), BookController.updateBook);
+router.delete('/:id', BookController.deleteBook);
 
 
 export const BookRoutes = router;

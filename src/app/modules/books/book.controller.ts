@@ -22,6 +22,24 @@ const createBook: RequestHandler = catchAsync(async (req, res, next) => {
     next();
 });
 
+//update a book
+const updateBook: RequestHandler = catchAsync(async (req, res, next) => {
+    const id = req.params.id;
+    const data = req.body;
+    const result = await BookService.updateBook(id, data);
+
+    sendResponse(
+        res, {
+        success: true,
+        statusCode: httpStatus.OK,
+        message: 'Books retrieved successfully',
+        data: result
+    });
+
+    next();
+});
+
+
 //get a single book 
 const getBookById: RequestHandler = catchAsync(async (req, res, next) => {
     const id = req.params.id;
@@ -53,22 +71,6 @@ const getAllBooks: RequestHandler = catchAsync(async (req, res, next) => {
     next();
 });
 
-//update a book
-const updateBook: RequestHandler = catchAsync(async (req, res, next) => {
-    const id = req.params.id;
-    const data = req.body;
-    const result = await BookService.updateBook(id, data);
-
-    sendResponse(
-        res, {
-        success: true,
-        statusCode: httpStatus.OK,
-        message: 'Books retrieved successfully',
-        data: result
-    });
-
-    next();
-});
 
 
 export const BookController = {

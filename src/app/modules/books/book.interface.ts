@@ -1,7 +1,7 @@
-import { Model } from "mongoose";
+import { Model, ObjectId } from "mongoose";
 
 export type IBook = {
-    _id: string;
+    _id: ObjectId;
     title: string;
     author: string;
     genre: string;
