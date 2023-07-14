@@ -1,4 +1,5 @@
 import express from 'express';
+import { BookRoutes } from '../modules/books/book.route';
 
 
 const router = express.Router();
