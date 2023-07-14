@@ -1,5 +1,6 @@
+/* eslint-disable @typescript-eslint/no-this-alias */
 import { Schema, model } from "mongoose";
-import { IUser } from "./user.interface";
+import { IUser, UserModel } from "./user.interface";
 import bcrypt from 'bcrypt'
 import config from "../../../config";
 
@@ -18,14 +19,14 @@ const UserSchema = new Schema<IUser>({
 );
 
 
-UserSchema.statics.isUserExist = async function (
-    id: string
-): Promise<IUser | null> {
-    return await User.findOne(
-        { id },
-        { id: 1, password: 1, role: 1, needsPasswordChange: 1 }
-    );
+UserSchema.statics.isUserExist = async function (email: string):
+    Promise<Pick<IUser, 'id' | 'email' | 'password'>> {
+    return await this.findOne(
+        { email },
+        { email: 1, password: 1, id: 1 }
+    )
 };
+
 
 UserSchema.statics.isPasswordMatched = async function (
     givenPassword: string,
@@ -36,7 +37,6 @@ UserSchema.statics.isPasswordMatched = async function (
 
 // hashing user password
 UserSchema.pre('save', async function (next) {
-    // eslint-disable-next-line @typescript-eslint/no-this-alias
     const user = this;
     user.password = await bcrypt.hash(
         user.password,
@@ -45,4 +45,4 @@ UserSchema.pre('save', async function (next) {
     next();
 });
 
-export const User = model<IUser>("User", UserSchema);
+export const User = model<IUser, UserModel>("User", UserSchema);
