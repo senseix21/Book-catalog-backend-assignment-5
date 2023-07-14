@@ -16,4 +16,4 @@ export type UserModel = {
         givenPassword: string,
         savedPassword: string
     ): Promise<boolean>;
-} & Model<IUser>;
+} & Model<IUser>; 
