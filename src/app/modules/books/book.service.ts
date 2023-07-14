@@ -22,6 +22,11 @@ const updateBook = async (id: string, data: Partial<IBook>): Promise<IBook | nul
     return result;
 };
 
+const deleteBook = async (id: string): Promise<IBook | null> => {
+    const result = await Book.findOneAndDelete({ _id: id }, { new: true });
+    return result;
+};
+
 
 
 
@@ -32,5 +37,6 @@ export const BookService = {
     createBook,
     getBookById,
     getAllBooks,
-    updateBook
+    updateBook,
+    deleteBook
 }

@@ -3,6 +3,8 @@ import catchAsync from "../../../shared/catchAsync";
 import sendResponse from "../../../shared/sendResponse";
 import httpStatus from 'http-status'
 import { BookService } from "./book.service";
+import { Book } from "./book.model";
+import ApiError from "../../../errors/ApiError";
 
 
 //create a new Book
@@ -26,17 +28,23 @@ const createBook: RequestHandler = catchAsync(async (req, res, next) => {
 const updateBook: RequestHandler = catchAsync(async (req, res, next) => {
     const id = req.params.id;
     const data = req.body;
-    const result = await BookService.updateBook(id, data);
+    const isBookExist = await Book.findById(id);
 
-    sendResponse(
-        res, {
-        success: true,
-        statusCode: httpStatus.OK,
-        message: 'Books retrieved successfully',
-        data: result
-    });
+    if (isBookExist) {
+        const result = await BookService.updateBook(id, data);
 
-    next();
+        sendResponse(
+            res, {
+            success: true,
+            statusCode: httpStatus.OK,
+            message: 'Books retrieved successfully',
+            data: result
+        });
+
+        next();
+    } else {
+        throw new ApiError(httpStatus.NOT_FOUND, 'Book not found');
+    }
 });
 
 
@@ -74,17 +82,24 @@ const getAllBooks: RequestHandler = catchAsync(async (req, res, next) => {
 //deleteBook
 const deleteBook: RequestHandler = catchAsync(async (req, res, next) => {
     const id = req.params.id;
-    const result = await BookService.deleteBook(id);
+    const isBookExist = await Book.findById(id);
+    console.log(isBookExist, 'deleteBook');
 
-    sendResponse(
-        res, {
-        success: true,
-        statusCode: httpStatus.OK,
-        message: 'Books retrieved successfully',
-        data: result
-    });
+    if (isBookExist) {
+        const result = await BookService.deleteBook(id);
 
-    next();
+        sendResponse(
+            res, {
+            success: true,
+            statusCode: httpStatus.OK,
+            message: 'Book deleted successfully',
+            data: result
+        });
+
+        next();
+    } else {
+        throw new ApiError(httpStatus.NOT_FOUND, "Book not found")
+    }
 });
 
 
