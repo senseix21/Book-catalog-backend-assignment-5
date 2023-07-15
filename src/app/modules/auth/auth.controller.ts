@@ -4,6 +4,7 @@ import config from "../../../config";
 import sendResponse from "../../../shared/sendResponse";
 import { ILoginResponse } from "./auth.interface";
 import { AuthService } from "./auth.service";
+// import { User } from "../users/user.model";
 
 const loginUser = catchAsync(async (req: Request, res: Response) => {
     const { ...loginData } = req.body;
@@ -26,6 +27,18 @@ const loginUser = catchAsync(async (req: Request, res: Response) => {
     );
 });
 
+//Logout user 
+const logoutUser = catchAsync(async (req: Request, res: Response) => {
+    await AuthService.logoutUser(req, res);
+
+    sendResponse(res, {
+        statusCode: 200,
+        success: true,
+        message: "User logged out successfully",
+    });
+});
+
 export const AuthController = {
-    loginUser
+    loginUser,
+    logoutUser
 }

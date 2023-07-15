@@ -8,6 +8,11 @@ const bookSchema = new Schema<IBook>({
     publicationYear: { type: String, required: true },
     cover_img: { type: String, required: true },
     reviews: [{ type: String }],
+    admin: {
+        type: Schema.Types.ObjectId,
+        ref: 'User',
+        required: true
+    }
 },
     {
         timestamps: true,

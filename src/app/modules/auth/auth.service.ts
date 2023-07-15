@@ -5,6 +5,7 @@ import { ILoginResponse, ILoginUser } from "./auth.interface";
 import { jwtHelpers } from "../../../helpers/jwthelpers";
 import config from "../../../config";
 import { Secret } from "jsonwebtoken";
+import { Request, Response } from "express";
 
 
 const loginUser = async (payload: ILoginUser): Promise<ILoginResponse> => {
@@ -23,15 +24,15 @@ const loginUser = async (payload: ILoginUser): Promise<ILoginResponse> => {
     }
 
     //create acess and refresh token 
-    const { id } = isUserExist
+    const { id: userId, email: userEmail } = isUserExist
     const accessToken = jwtHelpers.createToken(
-        { id },
+        { userEmail, userId },
         config.jwt.secret as Secret,
         config.jwt.expires_in as string
     )
 
     const refreshToken = jwtHelpers.createToken(
-        { id },
+        { userEmail, userId },
         config.jwt.refresh_secret as Secret,
         config.jwt.refresh_expires_in as string
     )
@@ -42,6 +43,16 @@ const loginUser = async (payload: ILoginUser): Promise<ILoginResponse> => {
     }
 }
 
+const logoutUser = async (req: Request, res: Response): Promise<void> => {
+    const refreshTokenCookie = req.cookies;
+    console.log(`Refreshing token: ${refreshTokenCookie}`);
+
+    // Clear the refresh token cookie
+    res.cookie('refreshToken', '', { expires: new Date(0) });
+
+}
+
 export const AuthService = {
-    loginUser
+    loginUser,
+    logoutUser
 }

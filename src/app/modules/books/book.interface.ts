@@ -1,4 +1,5 @@
-import { Model, ObjectId } from "mongoose";
+import { Model, ObjectId, Types } from "mongoose";
+import { IUser } from "../users/user.interface";
 
 export type IBook = {
     _id: ObjectId;
@@ -8,6 +9,7 @@ export type IBook = {
     cover_img: string;
     publicationYear: string;
     reviews: string[];
+    admin: Types.ObjectId | IUser;
 };
 
 export type IBookFilters = {

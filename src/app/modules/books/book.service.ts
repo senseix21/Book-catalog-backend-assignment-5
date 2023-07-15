@@ -6,9 +6,10 @@ import { Book } from "./book.model";
 import { SortOrder } from "mongoose";
 import { IGenericResponse } from "../../../interfaces/common";
 
+
 //Create a new book
 const createBook = async (data: IBook): Promise<IBook> => {
-    const result = await Book.create(data);
+    const result = await Book.create(data)
     return result;
 };
 

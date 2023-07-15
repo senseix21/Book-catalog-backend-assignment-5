@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { Request, RequestHandler, Response } from "express";
 import catchAsync from "../../../shared/catchAsync";
 import sendResponse from "../../../shared/sendResponse";
@@ -9,6 +10,10 @@ import pick from "../../../shared/pick";
 import { bookFilterableFields } from "./book.constants";
 import { paginationFields } from "../../../constants/pagination";
 import { IBook } from "./book.interface";
+import { jwtHelpers } from "../../../helpers/jwthelpers";
+import config from "../../../config";
+import { Secret } from "jsonwebtoken";
+import { User } from "../users/user.model";
 
 
 //create a new Book
@@ -50,25 +55,31 @@ const getAllBooks: RequestHandler = catchAsync(async (req: Request, res: Respons
 
 //update a book
 const updateBook: RequestHandler = catchAsync(async (req, res, next) => {
+    const token: any = req.headers.authorization;
+    const decoded = jwtHelpers.verifyToken(token, config.jwt.secret as Secret)
+    const user = decoded.userId;
+    const isUserExist = await User.findById(user)
+
+
     const id = req.params.id;
     const data = req.body;
-    const isBookExist = await Book.findById(id);
+    const isBookExist = await Book.findOne({ _id: id });
 
-    if (isBookExist) {
+    if (isBookExist && isBookExist?.admin == isUserExist?.id) {
         const result = await BookService.updateBook(id, data);
 
         sendResponse(
             res, {
             success: true,
             statusCode: httpStatus.OK,
-            message: 'Books retrieved successfully',
+            message: 'Books Updated successfully',
             data: result
         });
 
         next();
 
     } else {
-        throw new ApiError(httpStatus.NOT_FOUND, 'Book not found');
+        throw new ApiError(httpStatus.NOT_FOUND, 'Unauthorized user');
     }
 });
 
@@ -93,10 +104,16 @@ const getBookById: RequestHandler = catchAsync(async (req, res, next) => {
 
 //deleteBook
 const deleteBook: RequestHandler = catchAsync(async (req, res, next) => {
-    const id = req.params.id;
-    const isBookExist = await Book.findById(id);
+    const token: any = req.headers.authorization;
+    const decoded = jwtHelpers.verifyToken(token, config.jwt.secret as Secret)
+    const user = decoded.userId;
+    const isUserExist = await User.findById(user)
 
-    if (isBookExist) {
+
+    const id = req.params.id;
+    const isBookExist = await Book.findOne({ _id: id });
+
+    if (isBookExist && isBookExist?.admin == isUserExist?.id) {
         const result = await BookService.deleteBook(id);
 
         sendResponse(
@@ -108,8 +125,9 @@ const deleteBook: RequestHandler = catchAsync(async (req, res, next) => {
         });
 
         next();
+
     } else {
-        throw new ApiError(httpStatus.NOT_FOUND, "Book not found")
+        throw new ApiError(httpStatus.NOT_FOUND, 'Unauthorized user');
     }
 });
 
