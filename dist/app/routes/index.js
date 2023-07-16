@@ -7,6 +7,7 @@ const express_1 = __importDefault(require("express"));
 const book_route_1 = require("../modules/books/book.route");
 const user_route_1 = require("../modules/users/user.route");
 const auth_route_1 = require("../modules/auth/auth.route");
+const review_route_1 = require("../modules/comments/review.route");
 const router = express_1.default.Router();
 const moduleRoutes = [
     {
@@ -20,6 +21,10 @@ const moduleRoutes = [
     {
         path: '/books',
         route: book_route_1.BookRoutes,
+    },
+    {
+        path: '/reviews',
+        route: review_route_1.ReviewRoutes,
     }
 ];
 //configure the routes
