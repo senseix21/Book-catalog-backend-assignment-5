@@ -6,7 +6,7 @@ const loginUserZodSchema = zod_1.z.object({
     body: zod_1.z.object({
         email: zod_1.z.string({
             required_error: "Email is required"
-        }).email().nonempty("Please enter your email"),
+        }).nonempty("Please enter your email"),
         password: zod_1.z.string({
             required_error: "Password is required"
         }).nonempty("Please enter your password"),
