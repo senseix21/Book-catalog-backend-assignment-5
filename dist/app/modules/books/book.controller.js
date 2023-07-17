@@ -80,7 +80,7 @@ const getBookById = (0, catchAsync_1.default)((req, res, next) => __awaiter(void
     (0, sendResponse_1.default)(res, {
         success: true,
         statusCode: http_status_1.default.OK,
-        message: 'Book retrieved successfully',
+        message: 'Book deleted successfully',
         data: result
     });
     next();

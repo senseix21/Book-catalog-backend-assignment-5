@@ -93,7 +93,7 @@ const getBookById: RequestHandler = catchAsync(async (req, res, next) => {
         res, {
         success: true,
         statusCode: httpStatus.OK,
-        message: 'Book retrieved successfully',
+        message: 'Book deleted successfully',
         data: result
     });
 

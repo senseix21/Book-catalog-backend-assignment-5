@@ -29,7 +29,7 @@ const UserSchema = new mongoose_1.Schema({
 });
 UserSchema.statics.isUserExist = function (email) {
     return __awaiter(this, void 0, void 0, function* () {
-        return yield this.findOne({ email }, { email: 1, password: 1, id: 1 });
+        return yield this.findOne({ email }, { email: 1, password: 1, id: 1, userName: 1 });
     });
 };
 UserSchema.statics.isPasswordMatched = function (givenPassword, savedPassword) {
