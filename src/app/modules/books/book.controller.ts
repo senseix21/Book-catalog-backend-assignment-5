@@ -18,18 +18,30 @@ import { User } from "../users/user.model";
 
 //create a new Book
 const createBook: RequestHandler = catchAsync(async (req, res, next) => {
-    const bookData = req.body;
-    const result = await BookService.createBook(bookData);
+    const token: any = req.headers.authorization;
+    const decoded = jwtHelpers.verifyToken(token, config.jwt.secret as Secret)
+    const user = decoded.userId;
+    const isUserExist = await User.findById(user)
 
-    sendResponse(
-        res, {
-        success: true,
-        statusCode: httpStatus.OK,
-        message: 'Book created successfully',
-        data: result
-    });
 
-    next();
+    const data = req.body;
+
+    if (isUserExist) {
+        const result = await BookService.createBook(data);
+
+        sendResponse(
+            res, {
+            success: true,
+            statusCode: httpStatus.OK,
+            message: 'Book created successfully',
+            data: result
+        });
+
+        next();
+
+    } else {
+        throw new ApiError(httpStatus.NOT_FOUND, 'Unauthorized user');
+    }
 });
 
 
@@ -65,7 +77,7 @@ const updateBook: RequestHandler = catchAsync(async (req, res, next) => {
     const data = req.body;
     const isBookExist = await Book.findOne({ _id: id });
 
-    if (isBookExist && isBookExist?.admin == isUserExist?.id) {
+    if (isBookExist && isBookExist?.admin == isUserExist?.userName) {
         const result = await BookService.updateBook(id, data);
 
         sendResponse(
@@ -113,7 +125,7 @@ const deleteBook: RequestHandler = catchAsync(async (req, res, next) => {
     const id = req.params.id;
     const isBookExist = await Book.findOne({ _id: id });
 
-    if (isBookExist && isBookExist?.admin == isUserExist?.id) {
+    if (isBookExist && isBookExist?.admin == isUserExist?.userName) {
         const result = await BookService.deleteBook(id);
 
         sendResponse(

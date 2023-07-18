@@ -27,15 +27,24 @@ const config_1 = __importDefault(require("../../../config"));
 const user_model_1 = require("../users/user.model");
 //create a new Book
 const createBook = (0, catchAsync_1.default)((req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
-    const bookData = req.body;
-    const result = yield book_service_1.BookService.createBook(bookData);
-    (0, sendResponse_1.default)(res, {
-        success: true,
-        statusCode: http_status_1.default.OK,
-        message: 'Book created successfully',
-        data: result
-    });
-    next();
+    const token = req.headers.authorization;
+    const decoded = jwthelpers_1.jwtHelpers.verifyToken(token, config_1.default.jwt.secret);
+    const user = decoded.userId;
+    const isUserExist = yield user_model_1.User.findById(user);
+    const data = req.body;
+    if (isUserExist) {
+        const result = yield book_service_1.BookService.createBook(data);
+        (0, sendResponse_1.default)(res, {
+            success: true,
+            statusCode: http_status_1.default.OK,
+            message: 'Book created successfully',
+            data: result
+        });
+        next();
+    }
+    else {
+        throw new ApiError_1.default(http_status_1.default.NOT_FOUND, 'Unauthorized user');
+    }
 }));
 //get all books
 const getAllBooks = (0, catchAsync_1.default)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
@@ -59,7 +68,7 @@ const updateBook = (0, catchAsync_1.default)((req, res, next) => __awaiter(void 
     const id = req.params.id;
     const data = req.body;
     const isBookExist = yield book_model_1.Book.findOne({ _id: id });
-    if (isBookExist && (isBookExist === null || isBookExist === void 0 ? void 0 : isBookExist.admin) == (isUserExist === null || isUserExist === void 0 ? void 0 : isUserExist.id)) {
+    if (isBookExist && (isBookExist === null || isBookExist === void 0 ? void 0 : isBookExist.admin) == (isUserExist === null || isUserExist === void 0 ? void 0 : isUserExist.userName)) {
         const result = yield book_service_1.BookService.updateBook(id, data);
         (0, sendResponse_1.default)(res, {
             success: true,
@@ -93,7 +102,7 @@ const deleteBook = (0, catchAsync_1.default)((req, res, next) => __awaiter(void 
     const isUserExist = yield user_model_1.User.findById(user);
     const id = req.params.id;
     const isBookExist = yield book_model_1.Book.findOne({ _id: id });
-    if (isBookExist && (isBookExist === null || isBookExist === void 0 ? void 0 : isBookExist.admin) == (isUserExist === null || isUserExist === void 0 ? void 0 : isUserExist.id)) {
+    if (isBookExist && (isBookExist === null || isBookExist === void 0 ? void 0 : isBookExist.admin) == (isUserExist === null || isUserExist === void 0 ? void 0 : isUserExist.userName)) {
         const result = yield book_service_1.BookService.deleteBook(id);
         (0, sendResponse_1.default)(res, {
             success: true,

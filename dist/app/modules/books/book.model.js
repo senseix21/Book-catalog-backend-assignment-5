@@ -9,11 +9,7 @@ const bookSchema = new mongoose_1.Schema({
     publicationYear: { type: String, required: true },
     cover_img: { type: String, required: true },
     reviews: [{ type: String }],
-    admin: {
-        type: mongoose_1.Schema.Types.ObjectId,
-        ref: 'User',
-        required: true
-    }
+    admin: { type: String, required: true }
 }, {
     timestamps: true,
     toJSON: { virtuals: true },
